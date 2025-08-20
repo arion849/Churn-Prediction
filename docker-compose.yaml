@@ -36,12 +36,25 @@ services:
     ports:
       - "8080:8080"
     restart: always
+    volumes:
+      - ./models:/opt/airflow/models
+      - ./scripts:/opt/airflow/scripts
+      - ./data:/opt/airflow/data
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./requirements.txt:/requirements.txt
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
     restart: always
-
+    volumes:
+      - ./models:/opt/airflow/models
+      - ./scripts:/opt/airflow/scripts
+      - ./data:/opt/airflow/data
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./requirements.txt:/requirements.txt
 volumes:
   postgres-db-volume:
 
