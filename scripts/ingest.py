@@ -1,15 +1,14 @@
-import pandas as pd 
-import os
+from pathlib import Path
+from utils import load_config, setup_logger, ensure_parent_dir
 
-RAW_DATA_PATH = "./data/raw/churn_data.csv"
-PROCESSED_DATA_PATH = "./data/processed/churn_processed.csv"
+def main():
+    cfg = load_config()
+    log = setup_logger("ingest")
+    raw_path = Path(cfg["paths"]["raw_data"])
+    if not raw_path.exists():
+        ensure_parent_dir(raw_path)
+        raise FileNotFoundError(f"Raw dataset not found at {raw_path}")
+    log.info(f"Raw dataset available: {raw_path.resolve()}")
 
-def ingest_data():
-    os.makedirs(os.path.dirname(PROCESSED_DATA_PATH), exist_ok = True)
-    df = pd.read_csv(RAW_DATA_PATH)
-    print(f"Ingested {df.shape[0]} rows and {df.shape[1]} columns")
-    df.to_csv(PROCESSED_DATA_PATH, index = False)
-    return PROCESSED_DATA_PATH
-
-if __name__ == '__main__':
-    ingest_data()
+if __name__ == "__main__":
+    main()

@@ -1,47 +1,26 @@
-from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-import subprocess
+from datetime import datetime
+import sys
 
+sys.path.append('/opt/airflow/scripts')
 
-def run_ingest():
-    subprocess.run(["python", "/opt/airflow/scripts/ingest.py"], check=True)
-
-def run_preprocess():
-    subprocess.run(["python", "/opt/airflow/scripts/preprocess.py"], check=True)
-
-def run_train():
-    subprocess.run(["python", "/opt/airflow/scripts/train.py"], check=True)
-
-def run_evaluate():
-    subprocess.run(["python", "/opt/airflow/scripts/evaluate.py"], check=True)
-
+import ingest
+import preprocess
+import train
+import evaluate
 
 with DAG(
-    dag_id="churn_pipeline",
-    start_date=datetime(2025, 8, 20),
+    dag_id='churn_prediction_pipeline',
+    start_date=datetime(2025, 1, 1),
     schedule_interval=None,
-    catchup=False
+    catchup=False,
+    tags=['churn','ml']
 ) as dag:
 
-    ingest_task = PythonOperator(
-        task_id="ingest_data",
-        python_callable=run_ingest
-    )
+    t_ingest = PythonOperator(task_id='ingest', python_callable=ingest.main)
+    t_preprocess = PythonOperator(task_id='preprocess', python_callable=preprocess.main)
+    t_train = PythonOperator(task_id='train', python_callable=train.main)
+    t_evaluate = PythonOperator(task_id='evaluate', python_callable=evaluate.main)
 
-    preprocess_task = PythonOperator(
-        task_id="preprocess_data",
-        python_callable=run_preprocess
-    )
-
-    train_task = PythonOperator(
-        task_id="train_model",
-        python_callable=run_train
-    )
-
-    evaluate_task = PythonOperator(
-        task_id="evaluate_model",
-        python_callable=run_evaluate
-    )
-
-    ingest_task >> preprocess_task >> train_task >> evaluate_task
+    t_ingest >> t_preprocess >> t_train >> t_evaluate

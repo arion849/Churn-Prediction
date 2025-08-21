@@ -1,0 +1,22 @@
+paths:
+  raw_data: /opt/airflow/data/raw/churn_data.csv
+  processed_data: /opt/airflow/data/processed/churn_preprocessed.csv
+  X_test: /opt/airflow/data/processed/X_test.npy
+  y_test: /opt/airflow/data/processed/y_test.npy
+  model: /opt/airflow/models/logistic_model.pkl
+  metrics: /opt/airflow/models/metrics.csv
+  preprocessor: /opt/airflow/models/ordinal_encoder.pkl
+
+ml:
+  target: Churn
+  test_size: 0.2
+  random_state: 42
+  max_iter: 200
+  solver: liblinear
+
+versioning:
+  enable: true
+  format: "%Y%m%d_%H%M%S"
+
+logging:
+  level: INFO
